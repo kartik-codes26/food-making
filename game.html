@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romantic Recipe Rush 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 900px;
+            width: 90%;
+            position: relative;
+            color: white;
+        }
+
+        .hearts-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 20px;
+            animation: floatUp 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff6b9d, #c44bff, #4fc3f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.8)); }
+            100% { filter: drop-shadow(0 0 30px rgba(196, 75, 255, 0.8)); }
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.4em;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .level-info {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-area {
+            min-height: 400px;
+            background: linear-gradient(45deg, #fff3e0, #fce4ec);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            border: 3px dashed #ff69b4;
+        }
+
+        .kitchen-counter {
+            background: #8d6e63;
+            height: 60px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .ingredients-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ingredient {
+            background: white;
+            border: 3px solid #ff69b4;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .ingredient:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+        }
+
+        .ingredient.selected {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            transform: scale(1.2);
+            animation: bounce 0.6s ease;
+        }
+
+        .ingredient.burnt {
+            background: #424242;
+            color: #ff5252;
+            border-color: #d32f2f;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1.2); }
+            40% { transform: translateY(-10px) scale(1.2); }
+            60% { transform: translateY(-5px) scale(1.2); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .recipe-display {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ff69b4;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .recipe-name {
+            font-size: 1.4em;
+            color: #e91e63;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .recipe-ingredients {
+            color: #666;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            border-radius: 25px;
+            padding: 3px;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            height: 20px;
+            border-radius: 25px;
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .timer {
+            background: #ff5722;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .timer.danger {
+            background: #d32f2f;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44bff 50%, #4fc3f7 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .score {
+            font-size: 1.3em;
+            color: rgb(233, 227, 229);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .cooking-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            animation: cookingBounce 1s ease infinite;
+        }
+
+        @keyframes cookingBounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .success-message {
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .fail-message {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            animation: slideInUp 0.5s ease;
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .start-screen {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .start-screen h2 {
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            background: linear-gradient(135deg, #ff6b9d, #4fc3f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .start-screen .welcome-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .start-screen p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+
+        .easter-egg {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 20px;
+            opacity: 0.7;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.1;
+            animation: floatAround 15s linear infinite;
+        }
+
+        @keyframes floatAround {
+            0% { 
+                transform: translate(-100px, 100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { 
+                transform: translate(calc(100vw + 100px), -100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            color: #ff69b4;
+            font-size: 1.5em;
+            animation: particleFloat 1s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hearts-bg" id="heartsBackground"></div>
+        
+        <h1>Romantic Recipe Rush 💕</h1>
+        <p class="subtitle">Cook with love for your special someone!</p>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="start-screen">
+            <div class="floating-icons" id="floatingIcons"></div>
+            
+            <h2>Welcome to the Kitchen of Love! 👨‍🍳💖</h2>
+            
+            <div class="welcome-box">
+                <p>🌟 Embark on a culinary adventure of romance! 🌟</p>
+                <p>Master the art of cooking with love as you progress through enchanting levels, each more challenging than the last.</p>
+                <p>Select ingredients in perfect harmony, avoid the burnt disasters, and race against time to create magical recipes that will melt any heart! ✨</p>
+                <p>From simple heart-shaped cookies to the ultimate anniversary cake - prove you're the chef of champions! 🏆</p>
+                
+                <div class="easter-egg">
+                    💭 "Well, at least I'm better at cooking than I am at chess..." 🙄♟️
+                </div>
+            </div>
+            
+            <button class="btn" onclick="startGame()">🔥 Begin Your Culinary Journey! 🔥</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <div class="level-info">
+                <div class="score">❤️ Score: <span id="score">0</span> | Level: <span id="currentLevel">1</span></div>
+                <div id="timer" class="timer hidden">Time: <span id="timeLeft">30</span>s</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="recipe-display" id="recipeDisplay">
+                <div class="recipe-name" id="recipeName">Heart-Shaped Cookies</div>
+                <div class="recipe-ingredients" id="recipeIngredients">Select: 🍪 🥛 ❤️</div>
+            </div>
+
+            <div class="game-area" id="gameArea">
+                <div class="kitchen-counter">🏠 Your Love Kitchen 🏠</div>
+                <div class="ingredients-area" id="ingredientsArea"></div>
+            </div>
+
+            <button class="btn" id="nextLevelBtn" onclick="nextLevel()" style="display: none;">Next Level! 💖</button>
+            <button class="btn" onclick="restartGame()">Restart Game 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let currentLevel = 1;
+        let score = 0;
+        let selectedIngredients = [];
+        let gameTimer = null;
+        let timeLeft = 0;
+        let isPlaying = false;
+
+        // Game data
+        const recipes = [
+            {
+                name: "Heart-Shaped Cookies 🍪💖",
+                ingredients: ["🍪", "🥛", "❤️"],
+                description: "Select: Cookie, Milk, Heart",
+                timeLimit: 0
+            },
+            {
+                name: "Love Potion Smoothie 🧪💕",
+                ingredients: ["🍓", "🍌", "🥛", "✨", "💖"],
+                description: "Select: Strawberry, Banana, Milk, Magic, Love",
+                timeLimit: 0
+            },
+            {
+                name: "Romantic Pasta 🍝❤️",
+                ingredients: ["🍝", "🍅", "🧄", "🌿", "🧀", "💕"],
+                description: "Select: Pasta, Tomato, Garlic, Herbs, Cheese, Love",
+                timeLimit: 45
+            },
+            {
+                name: "Anniversary Cake 🎂👑",
+                ingredients: ["🎂", "🍓", "🍫", "🎀", "✨", "💖", "👑"],
+                description: "Select: Cake, Strawberry, Chocolate, Bow, Magic, Love, Crown",
+                timeLimit: 30
+            }
+        ];
+
+        const allIngredients = ["🍪", "🥛", "❤️", "🍓", "🍌", "✨", "💖", "🍝", "🍅", "🧄", "🌿", "🧀", "💕", "🎂", "🍫", "🎀", "👑", "🔥", "💀", "☠️"];
+
+        // Initialize floating icons for start screen
+        function createFloatingIcons() {
+            const iconsContainer = document.getElementById('floatingIcons');
+            if (!iconsContainer) return;
+            
+            const icons = ['🍳', '🎂', '🍓', '💖', '✨', '🥛', '🍝', '🧄', '🌟', '👑'];
+            
+            setInterval(() => {
+                const icon = document.createElement('div');
+                icon.className = 'floating-icon';
+                icon.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                icon.style.left = Math.random() * 100 + '%';
+                icon.style.animationDelay = Math.random() * 2 + 's';
+                icon.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                iconsContainer.appendChild(icon);
+
+                setTimeout(() => {
+                    if (icon.parentNode) {
+                        icon.remove();
+                    }
+                }, 20000);
+            }, 2000);
+        }
+
+        // Initialize floating hearts background
+        function createFloatingHearts() {
+            const heartsContainer = document.getElementById('heartsBackground');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = Math.random() > 0.5 ? '💖' : '💕';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 800);
+        }
+
+        // Start the game
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            currentLevel = 1;
+            score = 0;
+            isPlaying = true;
+            loadLevel();
+        }
+
+        // Load current level
+        function loadLevel() {
+            selectedIngredients = [];
+            const recipe = recipes[currentLevel - 1];
+            
+            document.getElementById('currentLevel').textContent = currentLevel;
+            document.getElementById('score').textContent = score;
+            document.getElementById('recipeName').textContent = recipe.name;
+            document.getElementById('recipeIngredients').textContent = recipe.description;
+            
+            // Setup timer for levels 3+
+            if (currentLevel >= 3) {
+                timeLeft = recipe.timeLimit;
+                document.getElementById('timer').classList.remove('hidden');
+                document.getElementById('timeLeft').textContent = timeLeft;
+                startTimer();
+            } else {
+                document.getElementById('timer').classList.add('hidden');
+            }
+            
+            setupIngredients();
+            updateProgressBar();
+        }
+
+        // Setup ingredients for current level
+        function setupIngredients() {
+            const container = document.getElementById('ingredientsArea');
+            container.innerHTML = '';
+            
+            const recipe = recipes[currentLevel - 1];
+            let ingredients = [...recipe.ingredients];
+            
+            // Add extra ingredients to make it challenging
+            const extraCount = Math.min(currentLevel * 2, 8);
+            for (let i = 0; i < extraCount; i++) {
+                const randomIngredient = allIngredients[Math.floor(Math.random() * allIngredients.length)];
+                if (!ingredients.includes(randomIngredient)) {
+                    ingredients.push(randomIngredient);
+                }
+            }
+            
+            // Add burnt ingredients for levels 2+
+            if (currentLevel >= 2) {
+                ingredients.push("🔥", "💀");
+            }
+            
+            // Shuffle ingredients
+            ingredients = ingredients.sort(() => Math.random() - 0.5);
+            
+            ingredients.forEach(ingredient => {
+                const div = document.createElement('div');
+                div.className = 'ingredient';
+                div.textContent = ingredient;
+                div.onclick = () => selectIngredient(ingredient, div);
+                container.appendChild(div);
+            });
+        }
+
+        // Handle ingredient selection
+        function selectIngredient(ingredient, element) {
+            if (!isPlaying) return;
+            
+            const recipe = recipes[currentLevel - 1];
+            const expectedIngredient = recipe.ingredients[selectedIngredients.length];
+            
+            // Check for burnt ingredients
+            if (ingredient === "🔥" || ingredient === "💀") {
+                element.classList.add('burnt');
+                createParticles(element, "💥");
+                playFailSound();
+                
+                setTimeout(() => {
+                    showMessage("Oh no! You selected a burnt ingredient! 😱", "fail");
+                    setTimeout(() => restartLevel(), 2000);
+                }, 500);
+                return;
+            }
+            
+            // Check if correct ingredient
+            if (ingredient === expectedIngredient) {
+                element.classList.add('selected');
+                selectedIngredients.push(ingredient);
+                createParticles(element, "✨");
+                playSuccessSound();
+                
+                updateProgressBar();
+                
+                // Check if recipe is complete
+                if (selectedIngredients.length === recipe.ingredients.length) {
+                    completeLevel();
+                }
+            } else {
+                element.classList.add('burnt');
+                createParticles(element, "❌");
+                playFailSound();
+                
+                setTimeout(() => {
+                    showMessage("Wrong ingredient! Try again! 💔", "fail");
+                    setTimeout(() => restartLevel(), 2000);
+                }, 500);
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const recipe = recipes[currentLevel - 1];
+            const progress = (selectedIngredients.length / recipe.ingredients.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Complete current level
+        function completeLevel() {
+            isPlaying = false;
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
+            const baseScore = currentLevel * 100;
+            const timeBonus = timeLeft * 5;
+            const totalScore = baseScore + timeBonus;
+            score += totalScore;
+            
+            document.getElementById('score').textContent = score;
+            
+            // Show cooking animation
+            const gameArea = document.getElementById('gameArea');
+            const cookingDiv = document.createElement('div');
+            cookingDiv.className = 'cooking-animation';
+            cookingDiv.innerHTML = '🍳✨';
+            gameArea.appendChild(cookingDiv);
+            
+            setTimeout(() => {
+                cookingDiv.remove();
+                
+                if (currentLevel < recipes.length) {
+                    showMessage(`Delicious! Recipe complete! 🎉<br>Score: +${totalScore}`, "success");
+                    document.getElementById('nextLevelBtn').style.display = 'inline-block';
+                } else {
+                    showMessage(`🎊 Congratulations! You're the ultimate romantic chef! 👑<br>Final Score: ${score}<br>Your girlfriend will love these recipes! 💖`, "success");
+                    document.getElementById('nextLevelBtn').style.display = 'none';
+                }
+            }, 2000);
+        }
+
+        // Start timer
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('danger');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(gameTimer);
+                    isPlaying = false;
+                    showMessage("Time's up! The food burned! ⏰🔥", "fail");
+                    setTimeout(() => restartLevel(), 2000);
+                }
+            }, 1000);
+        }
+
+        // Next level
+        function nextLevel() {
+            currentLevel++;
+            document.getElementById('nextLevelBtn').style.display = 'none';
+            document.getElementById('timer').classList.remove('danger');
+            isPlaying = true;
+            loadLevel();
+        }
+
+        // Restart current level
+        function restartLevel() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            document.getElementById('timer').classList.remove('danger');
+            isPlaying = true;
+            loadLevel();
+        }
+
+        // Restart entire game
+        function restartGame() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            currentLevel = 1;
+            score = 0;
+            document.getElementById('nextLevelBtn').style.display = 'none';
+            document.getElementById('timer').classList.remove('danger');
+            isPlaying = true;
+            loadLevel();
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const gameArea = document.getElementById('gameArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'fail-message';
+            messageDiv.innerHTML = message;
+            gameArea.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Create particle effects
+        function createParticles(element, particle) {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const particleDiv = document.createElement('div');
+                    particleDiv.className = 'particle';
+                    particleDiv.textContent = particle;
+                    
+                    const rect = element.getBoundingClientRect();
+                    const container = document.getElementById('gameArea').getBoundingClientRect();
+                    
+                    particleDiv.style.left = (rect.left - container.left + Math.random() * 40) + 'px';
+                    particleDiv.style.top = (rect.top - container.top + Math.random() * 40) + 'px';
+                    
+                    document.getElementById('gameArea').appendChild(particleDiv);
+                    
+                    setTimeout(() => particleDiv.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        // Sound effects (visual feedback)
+        function playSuccessSound() {
+            console.log('🎵 Success sound!');
+        }
+
+        function playFailSound() {
+            console.log('🎵 Fail sound!');
+        }
+
+        // Initialize the game
+        createFloatingHearts();
+        createFloatingIcons();
+    </script>
+</body>
+</html>
